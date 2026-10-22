@@ -13,7 +13,7 @@
 <header class="nav">
   <a class="brand" href="#top"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6" fill="none" stroke="currentColor" stroke-width="2"/></svg>Digital Storage</a>
   <button class="burger" aria-label="Toggle menu" aria-expanded="false">☰</button>
-  <nav id="menu"><a href="#basics">Intro</a><a href="#types">Technologies</a><a href="#compare">Compare</a><a href="#security">Security</a><a href="#calculator">Calculator</a><a href="#recommend">Recommend</a><a href="#quiz">Quiz</a></nav>
+  <nav id="menu"><a href="#basics">Intro</a><a href="#types">Technologies</a><a href="#compare">Compare</a><a href="#security">Security</a><a href="#calculator">Calculator</a><a href="#recommend">Recommend</a><a href="#quiz">Quiz</a><a href="#music">Music</a></nav>
 </header>
 
 <main id="top">
@@ -126,9 +126,28 @@
 </section>
 
 <section id="quiz" class="band"><div class="wrap section"><h2>Check your understanding</h2><div class="quiz" id="quizbox"></div></div></section>
+
+<section id="music" class="wrap section">
+  <h2>Study music</h2>
+  <p class="sub">Press play when you want background music. It never starts on its own.</p>
+  <div class="player">
+    <div class="now"><div class="disc" id="disc" aria-hidden="true">🎵</div><div><h3 id="ttl">Track title</h3><p id="artist">Original track made for this project</p></div></div>
+    <div class="seek"><span id="cur">0:00</span><input type="range" id="seek" min="0" max="1000" value="0" aria-label="Playback progress"><span id="dur">0:00</span></div>
+    <div class="ctrl">
+      <button id="prev" aria-label="Previous track">⏮</button>
+      <button id="pp" class="big" aria-label="Play">▶</button>
+      <button id="next" aria-label="Next track">⏭</button>
+      <label class="vol">🔊 <input type="range" id="vol" min="0" max="100" value="40" aria-label="Volume"></label>
+    </div>
+    <ol class="plist" id="plist"></ol>
+    <p class="note">All four tracks were created for this project and are free to use. To add your own royalty-free music, upload an MP3 and add it to the track list in script.js.</p>
+  </div>
+  <audio id="aud" preload="metadata"></audio>
+</section>
 </main>
 
 <footer><p>Chapter 7 – Digital Storage · Student project</p></footer>
+<button class="bgm" id="bgm" aria-pressed="false">🎵 Music: off</button>
 <script src="script.js"></script>
 </body>
 </html>

@@ -75,5 +75,26 @@ qb.innerHTML=`<h3>Final score: ${sco} / ${Q.length}</h3><p>${m}</p>${miss.length
 const q=Q[qi];qb.innerHTML=`<h3>Question ${qi+1} of ${Q.length}</h3><p>${q[0]}</p>${q[1].map((o,i)=>`<button class="opt" data-i="${i}">${o}</button>`).join("")}<p class="fb" aria-live="polite"></p>`;
 qb.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{const ok=+b.dataset.i==q[2];if(ok)sco++;else miss.push(qi);qb.querySelectorAll(".opt").forEach(o=>{o.disabled=true;if(+o.dataset.i==q[2])o.classList.add("right")});if(!ok)b.classList.add("wrong");qb.querySelector(".fb").textContent=(ok?"Correct. ":"Not quite. ")+q[3];const n=document.createElement("button");n.className="btn";n.textContent=qi<Q.length-1?"Next question":"See score";n.onclick=()=>{qi++;ask()};qb.appendChild(n)})}
 ask();
+/* music */
+const au=$("aud"),TR=[["Boot Sequence","music-1.mp3"],["Flash Glow","music-2.mp3"],["Cloud Lullaby","music-3.mp3"],["Deep Archive","music-4.mp3"]];let ti=0;
+const tm=t=>isFinite(t)?Math.floor(t/60)+":"+String(Math.floor(t%60)).padStart(2,"0"):"0:00";
+au.volume=.4;
+function mload(i){ti=i;au.src=TR[i][1];$("ttl").textContent=TR[i][0];$("artist").textContent="Original track made for this project";$("seek").value=0;$("cur").textContent="0:00";$("dur").textContent="0:00";$("plist").querySelectorAll("li").forEach((l,k)=>l.classList.toggle("now",k==i))}
+$("plist").innerHTML=TR.map((t,i)=>`<li><button data-i="${i}"><span>${i+1}. ${t[0]}</span><small id="d${i}"></small></button></li>`).join("");
+TR.forEach((t,i)=>{const a=new Audio();a.preload="metadata";a.src=t[1];a.onloadedmetadata=()=>{$("d"+i).textContent=tm(a.duration)}});
+const mplay=()=>au.play().catch(()=>{$("artist").textContent="Could not play. Check that the music files were uploaded."});
+const mtoggle=()=>au.paused?mplay():au.pause();
+$("plist").onclick=e=>{const b=e.target.closest("button");if(b){mload(+b.dataset.i);mplay()}};
+$("pp").onclick=mtoggle;$("bgm").onclick=mtoggle;
+$("prev").onclick=()=>{const p=!au.paused;mload((ti+TR.length-1)%TR.length);if(p)mplay()};
+$("next").onclick=()=>{const p=!au.paused;mload((ti+1)%TR.length);if(p)mplay()};
+$("vol").oninput=e=>{au.volume=e.target.value/100};
+$("seek").oninput=e=>{if(au.duration)au.currentTime=e.target.value/1000*au.duration};
+au.onplay=au.onpause=()=>{const p=!au.paused;$("pp").textContent=p?"⏸":"▶";$("pp").setAttribute("aria-label",p?"Pause":"Play");$("bgm").textContent=p?"🎵 Music: on":"🎵 Music: off";$("bgm").setAttribute("aria-pressed",p);$("disc").classList.toggle("spin",p)};
+au.ontimeupdate=()=>{if(au.duration)$("seek").value=au.currentTime/au.duration*1000;$("cur").textContent=tm(au.currentTime)};
+au.onloadedmetadata=()=>{$("dur").textContent=tm(au.duration)};
+au.onended=()=>{mload((ti+1)%TR.length);mplay()};
+au.onerror=()=>{$("artist").textContent="Audio file not found. Check the music file names."};
+mload(0);
 const bg=document.querySelector(".burger"),mn=document.getElementById("menu");
 bg.onclick=()=>{const o=mn.classList.toggle("show");bg.setAttribute("aria-expanded",o)};mn.onclick=()=>mn.classList.remove("show");
