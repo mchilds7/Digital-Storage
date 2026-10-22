@@ -13,9 +13,7 @@
 <header class="nav">
   <a class="brand" href="#top"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6" fill="none" stroke="currentColor" stroke-width="2"/></svg>Digital Storage</a>
   <button class="burger" aria-label="Toggle menu" aria-expanded="false">☰</button>
-  <nav id="menu">
-    <a href="#basics">Basics</a><a href="#types">Technologies</a><a href="#compare">Compare</a><a href="#picker">Choose</a><a href="#quiz">Quiz</a>
-  </nav>
+  <nav id="menu"><a href="#basics">Intro</a><a href="#types">Technologies</a><a href="#properties">Properties</a><a href="#compare">Compare</a><a href="#security">Security</a><a href="#picker">Choose</a><a href="#quiz">Quiz</a></nav>
 </header>
 
 <main id="top">
@@ -30,22 +28,18 @@
     </div>
     <div class="race" aria-label="Relative speed of storage types">
       <h2>Relative speed</h2>
-      <div class="bar-row"><span>SSD</span><i style="--w:95%"></i></div>
-      <div class="bar-row"><span>USB flash</span><i style="--w:55%"></i></div>
-      <div class="bar-row"><span>HDD</span><i style="--w:40%"></i></div>
-      <div class="bar-row"><span>Cloud</span><i style="--w:30%"></i></div>
-      <div class="bar-row"><span>DVD</span><i style="--w:8%"></i></div>
-      <small>Cloud depends on your internet connection.</small>
+      <div class="bar-row"><span>NVMe SSD</span><i style="--w:100%"></i></div><div class="bar-row"><span>SATA SSD</span><i style="--w:62%"></i></div><div class="bar-row"><span>USB flash</span><i style="--w:45%"></i></div><div class="bar-row"><span>HDD</span><i style="--w:30%"></i></div><div class="bar-row"><span>Blu-ray</span><i style="--w:10%"></i></div><small>Not to scale. Cloud speed depends on your internet connection.</small>
     </div>
   </div>
 </section>
 
 <section id="basics" class="wrap section">
-  <h2>The basics</h2>
+  <h2>Introduction to digital storage</h2>
+  <p class="sub">Digital storage keeps data as bits, which are 0s and 1s. Eight bits make a byte, and every file you save, from a note to a movie, is a long list of bytes.</p>
   <div class="grid3">
-    <article class="card"><div class="ico">💾</div><h3>Storage vs. memory</h3><p>Storage keeps data when the power is off. RAM is fast working memory that clears when you shut down.</p></article>
-    <article class="card"><div class="ico">📏</div><h3>Capacity units</h3><p>1 KB → MB → GB → TB, each about 1,000 times bigger than the last. A phone photo is a few MB; a movie is a few GB.</p></article>
-    <article class="card"><div class="ico">⚖️</div><h3>What to compare</h3><p>Capacity, speed, cost per GB, durability, portability and security. No single type wins in every category.</p></article>
+    <article class="card"><div class="ico">💾</div><h3>Storage vs. memory</h3><p>Storage (secondary storage) keeps data when the power is off. RAM is fast working memory that clears when you shut down.</p></article>
+    <article class="card"><div class="ico">🧲</div><h3>How bits are kept</h3><p>Magnetic drives flip tiny magnetic regions. Flash drives trap electric charge in chips. Optical discs use a laser to read pits. Cloud storage keeps files on a provider's servers.</p></article>
+    <article class="card"><div class="ico">📏</div><h3>Capacity units</h3><p>1 KB, MB, GB and TB are each about 1,000 times bigger than the last. A phone photo is a few MB, a film is a few GB, and a laptop drive holds hundreds of GB to a few TB.</p></article>
   </div>
 </section>
 
@@ -60,10 +54,40 @@
   </div>
 </section>
 
-<section id="compare" class="wrap section">
-  <h2>Side-by-side comparison</h2>
-  <p class="sub">Ratings out of 5 (higher is better; for cost, 5 means cheapest per GB).</p>
-  <div class="scroll"><table id="tbl"></table></div>
+<section id="properties" class="wrap section">
+  <h2>Five properties to judge storage</h2>
+  <p class="sub">Every choice is a trade-off between these five.</p>
+  <div class="grid4">
+    <article class="card"><div class="ico">📦</div><h3>Capacity</h3><p>How much data it holds, measured in GB or TB. Bigger drives cost more in total.</p></article>
+    <article class="card"><div class="ico">🚀</div><h3>Speed</h3><p>How fast data is read and written, in MB/s. It decides how quickly a computer starts and files copy.</p></article>
+    <article class="card"><div class="ico">🛡️</div><h3>Durability</h3><p>How well it survives drops, heat, wear and time. Moving parts and scratchable surfaces are weak points.</p></article>
+    <article class="card"><div class="ico">🎒</div><h3>Portability</h3><p>How easy it is to carry and plug into other devices. Small and removable is best.</p></article>
+    <article class="card"><div class="ico">💲</div><h3>Cost</h3><p>Compare price per GB, not only the sticker price. Cloud adds a monthly fee.</p></article>
+  </div>
+</section>
+
+<section id="compare" class="band">
+  <div class="wrap section">
+    <h2>Compare storage technologies</h2>
+    <p class="sub">Select 2 to 4 technologies. The best score in each row is highlighted.</p>
+    <div class="filters" id="pick" aria-label="Choose technologies to compare"></div>
+    <div class="scroll"><table id="tbl"></table></div>
+    <p class="note">Figures are typical ranges for current consumer products and vary by model and price. Ratings are out of 5; for cost, 5 means cheapest per GB.</p>
+  </div>
+</section>
+
+<section id="security" class="wrap section">
+  <h2>Backup, encryption and information security</h2>
+  <div class="grid3">
+    <article class="card"><div class="ico">🔁</div><h3>Data backup</h3><p>Any drive can fail, so keep copies. The <b>3-2-1 rule</b> means 3 copies of your data, on 2 different types of storage, with 1 copy off-site (such as the cloud).</p></article>
+    <article class="card"><div class="ico">🔐</div><h3>Encryption</h3><p>Encryption scrambles data so only someone with the key can read it. Use it for data at rest (BitLocker, FileVault) and in transit (HTTPS). A lost drive stays private if it is encrypted.</p></article>
+    <article class="card"><div class="ico">🕵️</div><h3>Information security</h3><p>Security protects data from theft, loss and tampering. It covers who can access files, protection from malware, and safe disposal of old drives.</p></article>
+  </div>
+  <div class="check">
+    <h3>Your security checklist</h3>
+    <div id="checks"></div>
+    <p class="fb" id="prog" aria-live="polite"></p>
+  </div>
 </section>
 
 <section id="picker" class="band">
