@@ -13,7 +13,7 @@
 <header class="nav">
   <a class="brand" href="#top"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6" fill="none" stroke="currentColor" stroke-width="2"/></svg>Digital Storage</a>
   <button class="burger" aria-label="Toggle menu" aria-expanded="false">☰</button>
-  <nav id="menu"><a href="#basics">Intro</a><a href="#types">Technologies</a><a href="#properties">Properties</a><a href="#compare">Compare</a><a href="#security">Security</a><a href="#picker">Choose</a><a href="#quiz">Quiz</a></nav>
+  <nav id="menu"><a href="#basics">Intro</a><a href="#types">Technologies</a><a href="#compare">Compare</a><a href="#security">Security</a><a href="#calculator">Calculator</a><a href="#recommend">Recommend</a><a href="#quiz">Quiz</a></nav>
 </header>
 
 <main id="top">
@@ -90,21 +90,42 @@
   </div>
 </section>
 
-<section id="picker" class="band">
+<section id="calculator" class="band">
   <div class="wrap section">
-    <h2>Storage picker</h2>
-    <p class="sub">Choose a situation to see the best fit and why.</p>
-    <div class="picker">
-      <div class="scen" id="scen"></div>
-      <div class="result" id="result" aria-live="polite"><p>Select a scenario on the left.</p></div>
+    <h2>Storage calculator</h2>
+    <p class="sub">Pick a device or type a capacity to see how many photos, songs and videos fit, then plan your own mix.</p>
+    <div class="chips" id="presets" aria-label="Device presets"></div>
+    <div class="calc">
+      <div class="panel">
+        <h3>How many fit?</h3>
+        <div class="field"><label for="capv">Capacity</label><span><input type="number" id="capv" min="0" step="any" value="128"> <select id="capu"><option>MB</option><option selected>GB</option><option>TB</option></select></span></div>
+        <div class="field"><label for="ps">Photo size</label><select id="ps"></select></div>
+        <div class="field"><label for="ss">Song size</label><select id="ss"></select></div>
+        <div class="field"><label for="vs">Video size</label><select id="vs"></select></div>
+        <div class="fit" id="fit" aria-live="polite"></div>
+      </div>
+      <div class="panel">
+        <h3>Plan your space</h3>
+        <div class="field"><label for="np">Photos</label><input type="number" id="np" min="0" value="2000"></div>
+        <div class="field"><label for="ns">Songs</label><input type="number" id="ns" min="0" value="500"></div>
+        <div class="field"><label for="nh">Hours of video</label><input type="number" id="nh" min="0" step="any" value="5"></div>
+        <div class="meter"><i id="mbar"></i></div>
+        <p id="mtxt" aria-live="polite"></p>
+        <p class="note">File sizes are typical estimates. Real usable space is a little lower than the label because of formatting.</p>
+      </div>
     </div>
   </div>
 </section>
 
-<section id="quiz" class="wrap section">
-  <h2>Check your understanding</h2>
-  <div class="quiz" id="quizbox"></div>
+<section id="recommend" class="wrap section">
+  <h2>Recommendation tool</h2>
+  <p class="sub">Choose how you will use storage and what matters most.</p>
+  <div class="chips" id="uses" aria-label="Use case"></div>
+  <div class="chips" id="prio" aria-label="Priority"></div>
+  <div class="result" id="rec" aria-live="polite"></div>
 </section>
+
+<section id="quiz" class="band"><div class="wrap section"><h2>Check your understanding</h2><div class="quiz" id="quizbox"></div></div></section>
 </main>
 
 <footer><p>Chapter 7 – Digital Storage · Student project</p></footer>

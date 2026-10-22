@@ -27,29 +27,53 @@ const K=["Back up important files using the 3-2-1 rule","Turn on drive encryptio
 const ck=document.getElementById("checks"),pg=document.getElementById("prog");
 ck.innerHTML=K.map((k,i)=>`<label><input type="checkbox" data-i="${i}"> ${k}</label>`).join("");
 ck.onchange=()=>{const n=ck.querySelectorAll("input:checked").length;pg.textContent=n==K.length?"All done. Your data is in good shape.":`${n} of ${K.length} done`};pg.textContent=`0 of ${K.length} done`;
-/* picker */
-const S=[
-["Back up a family's photos for years","Cloud storage plus an external HDD","The cloud gives an off-site copy and the HDD gives cheap local space. Together they follow the 3-2-1 rule.","A second HDD kept at a relative's home."],
-["Edit 4K video or play big games","NVMe SSD","Large files load and save fastest over PCIe, which cuts waiting time.","SATA SSD if your computer has no M.2 slot."],
-["Speed up an old laptop on a budget","SATA SSD","Most older laptops have a SATA port, and swapping an HDD for an SSD makes it start and open apps much faster.","Check first whether your laptop has an M.2 slot for NVMe."],
-["Move a school presentation between computers","USB flash drive","It is small, cheap and works on almost any computer without internet.","Cloud storage if both computers are online."],
-["Store photos and video on a camera","Memory card","Cards are compact, swappable and fast enough to save images quickly.","Choose a higher speed class for video."],
-["Keep a read-only copy of a finished project","Blu-ray disc","A disc cannot be changed by malware once written, and one disc holds up to 25 GB or more.","DVD for projects under 4.7 GB."],
-["Share files with a team in different cities","Cloud storage","Everyone reaches the same files from anywhere, and the provider handles backups and sharing.","A network drive if everyone works in one office."]];
-const sc=document.getElementById("scen"),rs=document.getElementById("result");
-sc.innerHTML=S.map((s,i)=>`<button data-i="${i}">${s[0]}</button>`).join("");
-sc.onclick=e=>{const b=e.target.closest("button");if(!b)return;sc.querySelectorAll("button").forEach(x=>x.classList.remove("on"));b.classList.add("on");const s=S[b.dataset.i];rs.innerHTML=`<h3>${s[1]}</h3><p>${s[2]}</p><p class="alt">Alternative: ${s[3]}</p>`};
+/* calculator */
+const $=id=>document.getElementById(id),U={MB:1,GB:1000,TB:1e6};
+const SZ={ps:[["Phone photo (JPEG, about 4 MB)",4],["High-quality photo (RAW, about 25 MB)",25]],ss:[["MP3 song (about 4 MB)",4],["Lossless song (FLAC, about 30 MB)",30]],vs:[["HD video, per hour (about 6 GB)",6000],["4K video, per hour (about 20 GB)",20000]]};
+Object.keys(SZ).forEach(k=>$(k).innerHTML=SZ[k].map((o,i)=>`<option value="${i}">${o[0]}</option>`).join(""));
+const fm=m=>m>=1e6?(m/1e6).toFixed(2)+" TB":m>=1000?(m/1000).toFixed(1)+" GB":Math.round(m)+" MB";
+function calc(){const cap=(+$("capv").value||0)*U[$("capu").value],p=SZ.ps[$("ps").value][1],s=SZ.ss[$("ss").value][1],v=SZ.vs[$("vs").value][1];
+$("fit").innerHTML=[["📷","photos",cap/p],["🎵","songs",cap/s],["🎬","hours of video",cap/v]].map(([i,l,n])=>`<div><span>${i}</span><b>${Math.floor(n).toLocaleString()}</b>${l}</div>`).join("");
+const u=(+$("np").value||0)*p+(+$("ns").value||0)*s+(+$("nh").value||0)*v,pc=cap?u/cap*100:0;
+$("mbar").style.width=Math.min(pc,100)+"%";$("mbar").className=pc>100?"over":"";
+$("mtxt").textContent=cap?(pc>100?`Too much: you need ${fm(u)}, which is ${fm(u-cap)} over the ${fm(cap)} capacity.`:`${fm(u)} used of ${fm(cap)} (${pc.toFixed(1)}%). ${fm(cap-u)} free.`):"Enter a capacity."}
+document.getElementById("calculator").addEventListener("input",calc);
+const P=[["CD",700,"MB"],["DVD",4.7,"GB"],["Blu-ray",25,"GB"],["64 GB USB",64,"GB"],["128 GB SD card",128,"GB"],["512 GB SSD",512,"GB"],["2 TB HDD",2,"TB"]];
+$("presets").innerHTML=P.map((p,i)=>`<button class="chip" data-i="${i}">${p[0]}</button>`).join("");
+$("presets").onclick=e=>{const b=e.target.closest(".chip");if(!b)return;const p=P[b.dataset.i];$("capv").value=p[1];$("capu").value=p[2];$("presets").querySelectorAll(".chip").forEach(c=>c.setAttribute("aria-pressed",c==b));calc()};
+calc();
+/* recommendation */
+const UC=["🎮 Gaming","📚 Schoolwork","📷 Photography","💼 Business","🔁 Backups"],PR=[["perf","Best performance"],["cost","Lowest cost"]];
+const REC=[
+{perf:{t:"NVMe SSD",ids:[2,1],why:"Games stream huge files, so an NVMe SSD gives the shortest load times and fastest installs.",tip:"1 TB or more. Many modern games need 50–150 GB each.",avoid:"Running games from a USB flash drive or an optical disc."},cost:{t:"SATA SSD for favorite games, HDD for the rest",ids:[1,0],why:"A SATA SSD still loads far faster than an HDD, while an HDD stores the rest of your library cheaply.",tip:"Keep the operating system and your most-played games on the SSD.",avoid:"Installing your operating system on an HDD."}},
+{perf:{t:"SSD in your laptop plus cloud storage",ids:[1,8],why:"The SSD keeps your laptop fast, and the cloud keeps assignments safe and available on any device.",tip:"Save work in a synced cloud folder so a copy is made automatically.",avoid:"Keeping the only copy of an assignment on one device."},cost:{t:"USB flash drive plus free cloud storage",ids:[3,8],why:"Documents and slides are small, so a cheap USB drive and a free cloud account cover almost everything.",tip:"A 32–64 GB drive is plenty. Label it and keep a second copy.",avoid:"Leaving your only copy on a USB drive, which is easy to lose."}},
+{perf:{t:"Fast memory cards plus an NVMe SSD for editing",ids:[4,2],why:"Fast cards keep up with burst shooting, and an NVMe SSD makes editing large RAW files smooth.",tip:"Look for high write-speed cards. RAW photos can be 25 MB or more each.",avoid:"Slow, unbranded cards that can lose a shoot."},cost:{t:"Memory cards plus an external HDD",ids:[4,0],why:"Cards hold the shoot, and an HDD stores years of photos for the lowest price per GB.",tip:"Copy cards to the HDD after every shoot and keep a cloud copy of the best shots.",avoid:"Deleting photos from the card before they are backed up."}},
+{perf:{t:"Encrypted SSD plus managed cloud storage",ids:[2,8],why:"Fast local work plus cloud storage with user accounts, access controls and automatic backup.",tip:"Turn on encryption and two-factor authentication, and limit who sees which files.",avoid:"Sharing confidential files on personal USB drives."},cost:{t:"Encrypted external HDD plus cloud backup",ids:[0,8],why:"An HDD gives cheap capacity for records, and the cloud adds an off-site copy.",tip:"Encrypt the drive and keep it locked away when not in use.",avoid:"Unencrypted drives that could be lost or stolen."}},
+{perf:{t:"Cloud storage plus an external SSD",ids:[8,1],why:"The SSD restores files quickly after a failure, and the cloud keeps an off-site copy.",tip:"Follow the 3-2-1 rule and test restoring a file now and then.",avoid:"Backing up to the same drive that holds the originals."},cost:{t:"External HDD plus cloud for key files",ids:[0,8],why:"HDDs are the cheapest way to hold large backups, and the cloud protects your most important files off-site.",tip:"Use backup software on a schedule so it never depends on memory.",avoid:"Relying on a single backup copy."}}];
+let uc=0,pr="perf";
+function rec(){$("uses").innerHTML=UC.map((u,i)=>`<button class="chip" data-i="${i}" aria-pressed="${i==uc}">${u}</button>`).join("");
+$("prio").innerHTML=PR.map(p=>`<button class="chip" data-p="${p[0]}" aria-pressed="${p[0]==pr}">${p[1]}</button>`).join("");
+const r=REC[uc][pr];$("rec").innerHTML=`<h3>${r.t}</h3><p>${r.why}</p><p class="alt"><b>Look for:</b> ${r.tip}</p><p class="alt"><b>Avoid:</b> ${r.avoid}</p><button class="btn" id="go">Compare these in the table</button>`;
+$("go").onclick=()=>{sel=r.ids.slice();cmp();location.hash="compare"}}
+$("uses").onclick=e=>{const b=e.target.closest(".chip");if(b){uc=+b.dataset.i;rec()}};
+$("prio").onclick=e=>{const b=e.target.closest(".chip");if(b){pr=b.dataset.p;rec()}};
+rec();
 /* quiz */
 const Q=[["Which storage has no moving parts?",["HDD","SSD","Blu-ray drive"],1,"SSDs use flash chips, so nothing spins."],
 ["Why is an NVMe SSD faster than a SATA SSD?",["It connects over PCIe lanes","It spins faster","It uses a laser"],0,"PCIe offers far more bandwidth than the SATA connection."],
+["A drive is labeled 1 TB. About how many GB is that?",["100 GB","1,000 GB","1,000,000 GB"],1,"Each unit is about 1,000 times the one before it."],
+["Which is the cheapest per GB for bulk storage?",["HDD","NVMe SSD","Memory card"],0,"HDDs give the most space for the least money."],
+["Which device can be damaged by being dropped while it is running?",["USB flash drive","HDD","Memory card"],1,"An HDD's read/write heads float just above spinning platters."],
+["Which optical disc holds the most data?",["CD","DVD","Blu-ray"],2,"The blue laser reads smaller pits, so Blu-ray fits more."],
 ["What does the 3-2-1 backup rule mean?",["3 copies, 2 types of media, 1 off-site","3 drives, 2 passwords, 1 cloud account","3 backups a day, 2 a week, 1 a month"],0,"Spreading copies across media and places protects against any single failure."],
 ["What does encryption do?",["Makes files smaller","Scrambles data so only a key holder can read it","Speeds up a drive"],1,"A stolen encrypted drive is unreadable without the key."],
-["Which optical disc holds the most data?",["CD","DVD","Blu-ray"],2,"The blue laser reads smaller pits, so Blu-ray fits more."],
+["Best way to share files with people in different cities?",["Cloud storage","CD","SD card"],0,"Cloud files can be reached by anyone you allow, from anywhere."],
 ["Cloud storage always needs…",["A DVD drive","An internet connection","A USB port"],1,"You reach cloud files over the internet."]];
-let qi=0,sco=0;const qb=document.getElementById("quizbox");
-function ask(){if(qi>=Q.length){qb.innerHTML=`<h3>Score: ${sco} / ${Q.length}</h3><button class="btn" id="re">Try again</button>`;document.getElementById("re").onclick=()=>{qi=0;sco=0;ask()};return}
+let qi=0,sco=0,miss=[];const qb=$("quizbox");
+function ask(){if(qi>=Q.length){const pc=sco/Q.length,m=pc>=.9?"Excellent work.":pc>=.6?"Good job. A little more review will help.":"Keep studying and try again.";
+qb.innerHTML=`<h3>Final score: ${sco} / ${Q.length}</h3><p>${m}</p>${miss.length?`<p><b>Review these:</b></p><ul>${miss.map(i=>`<li>${Q[i][0]} ${Q[i][3]}</li>`).join("")}</ul>`:""}<button class="btn" id="re">Try again</button>`;$("re").onclick=()=>{qi=0;sco=0;miss=[];ask()};return}
 const q=Q[qi];qb.innerHTML=`<h3>Question ${qi+1} of ${Q.length}</h3><p>${q[0]}</p>${q[1].map((o,i)=>`<button class="opt" data-i="${i}">${o}</button>`).join("")}<p class="fb" aria-live="polite"></p>`;
-qb.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{const ok=+b.dataset.i==q[2];if(ok)sco++;qb.querySelectorAll(".opt").forEach(o=>{o.disabled=true;if(+o.dataset.i==q[2])o.classList.add("right")});if(!ok)b.classList.add("wrong");qb.querySelector(".fb").textContent=(ok?"Correct. ":"Not quite. ")+q[3];const n=document.createElement("button");n.className="btn";n.textContent=qi<Q.length-1?"Next question":"See score";n.onclick=()=>{qi++;ask()};qb.appendChild(n)})}
+qb.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{const ok=+b.dataset.i==q[2];if(ok)sco++;else miss.push(qi);qb.querySelectorAll(".opt").forEach(o=>{o.disabled=true;if(+o.dataset.i==q[2])o.classList.add("right")});if(!ok)b.classList.add("wrong");qb.querySelector(".fb").textContent=(ok?"Correct. ":"Not quite. ")+q[3];const n=document.createElement("button");n.className="btn";n.textContent=qi<Q.length-1?"Next question":"See score";n.onclick=()=>{qi++;ask()};qb.appendChild(n)})}
 ask();
 const bg=document.querySelector(".burger"),mn=document.getElementById("menu");
 bg.onclick=()=>{const o=mn.classList.toggle("show");bg.setAttribute("aria-expanded",o)};mn.onclick=()=>mn.classList.remove("show");
