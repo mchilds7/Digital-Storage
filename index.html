@@ -7,13 +7,14 @@
 <meta name="description" content="Compare storage technologies and learn how to choose the right one.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;700;800&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <header class="nav">
   <a class="brand" href="#top"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6" fill="none" stroke="currentColor" stroke-width="2"/></svg>Digital Storage</a>
   <button class="burger" aria-label="Toggle menu" aria-expanded="false">☰</button>
-  <nav id="menu"><a href="#basics">Intro</a><a href="#types">Technologies</a><a href="#compare">Compare</a><a href="#security">Security</a><a href="#calculator">Calculator</a><a href="#recommend">Recommend</a><a href="#quiz">Quiz</a><a href="#music">Music</a></nav>
+  <nav id="menu"><a href="#basics">Intro</a><a href="#types">Technologies</a><a href="#compare">Compare</a><a href="#security">Security</a><a href="#calculator">Calculator</a><a href="#recommend">Recommend</a><a href="#quiz">Quiz</a><a href="#music">Music</a><a href="#map">Map</a></nav>
 </header>
 
 <main id="top">
@@ -144,10 +145,29 @@
   </div>
   <audio id="aud" preload="metadata"></audio>
 </section>
+<section id="map" class="band">
+  <div class="wrap section">
+    <h2>Where data lives: interactive map</h2>
+    <p class="sub">Explore data center hubs, technology companies and universities. Drag to pan, use the + and − buttons to zoom, or search for any place.</p>
+    <form class="msearch" id="msearch" role="search">
+      <input type="search" id="mq" placeholder="Search a place, e.g. Tokyo or MIT" aria-label="Search for a place">
+      <button class="btn" type="submit">Search</button>
+      <button class="btn ghost dark" type="button" id="mreset">Reset map</button>
+    </form>
+    <p class="fb" id="mstat" aria-live="polite"></p>
+    <div class="chips" id="mfilt" aria-label="Filter map markers"></div>
+    <div class="mapwrap">
+      <div id="lmap" aria-label="Map of example data centers, technology companies and universities"></div>
+      <div class="mlist" id="mlist"></div>
+    </div>
+    <p class="note">Map data © OpenStreetMap contributors. Locations are approximate and chosen as examples. Place search uses OpenStreetMap's Nominatim service.</p>
+  </div>
+</section>
 </main>
 
 <footer><p>Chapter 7 – Digital Storage · Student project</p></footer>
 <button class="bgm" id="bgm" aria-pressed="false">🎵 Music: off</button>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script src="script.js"></script>
 </body>
 </html>

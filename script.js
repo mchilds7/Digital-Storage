@@ -96,5 +96,48 @@ au.onloadedmetadata=()=>{$("dur").textContent=tm(au.duration)};
 au.onended=()=>{mload((ti+1)%TR.length);mplay()};
 au.onerror=()=>{$("artist").textContent="Audio file not found. Check the music file names."};
 mload(0);
+/* map */
+const MT={dc:["🗄️","Data center hub"],co:["🏢","Technology company"],ed:["🎓","University"]};
+const MP=[
+["Ashburn, Virginia, USA","dc",39.0438,-77.4874,"Northern Virginia hosts one of the largest concentrations of data centers in the world, storing cloud data for many companies."],
+["The Dalles, Oregon, USA","dc",45.5946,-121.1787,"Google opened one of its first company-built data centers here in 2006."],
+["Council Bluffs, Iowa, USA","dc",41.2619,-95.8608,"A large Google data center campus operates here in the central United States."],
+["Dublin, Ireland","dc",53.3498,-6.2603,"Ireland has many data centers serving cloud customers across Europe."],
+["Frankfurt, Germany","dc",50.1109,8.6821,"Home to DE-CIX, one of the world's largest internet exchange points, which attracts many data centers."],
+["Luleå, Sweden","dc",65.5848,22.1547,"Meta built a data center near Luleå, where the cold climate helps cool the servers."],
+["Singapore","dc",1.3521,103.8198,"A major data center hub for Southeast Asia."],
+["Apple Park, Cupertino, USA","co",37.3349,-122.009,"Headquarters of Apple, which makes devices that rely on flash storage."],
+["Googleplex, Mountain View, USA","co",37.422,-122.0841,"Headquarters of Google, which runs cloud storage services such as Google Drive."],
+["Microsoft Campus, Redmond, USA","co",47.6396,-122.1285,"Headquarters of Microsoft, which offers OneDrive and Azure cloud storage."],
+["Samsung Digital City, Suwon, South Korea","co",37.2574,127.0556,"Samsung is one of the largest makers of flash memory and SSDs."],
+["TSMC, Hsinchu, Taiwan","co",24.7814,120.997,"TSMC is the world's largest contract chip maker, producing chips used in computers and devices."],
+["MIT, Cambridge, USA","ed",42.3601,-71.0942,"A research university known for computing and engineering."],
+["Stanford University, USA","ed",37.4275,-122.1697,"Located in Silicon Valley, close to many technology companies."],
+["Columbia University, New York, USA","ed",40.8075,-73.9626,"An Ivy League university in New York City."],
+["University of Oxford, UK","ed",51.7548,-1.2544,"One of the world's oldest universities, with large library archives."],
+["ETH Zurich, Switzerland","ed",47.3763,8.5476,"A Swiss technical university with strong computer science research."],
+["National University of Singapore","ed",1.2966,103.7764,"A leading Asian university for engineering and computing."],
+["University of Toronto, Canada","ed",43.6629,-79.3957,"Known for research in artificial intelligence."]];
+if(window.L){
+const lm=L.map("lmap",{scrollWheelZoom:false}).setView([25,10],2),lay=L.layerGroup().addTo(lm);
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(lm);
+lm.on("click",()=>lm.scrollWheelZoom.enable());lm.on("mouseout",()=>lm.scrollWheelZoom.disable());
+const pin=(e,c)=>L.divIcon({className:"pin "+c,html:e,iconSize:[34,34],iconAnchor:[17,17],popupAnchor:[0,-16]});
+let MK=[],flt="all",cur=MP,sm=null;
+function draw(items,fit){lay.clearLayers();MK=items.map(p=>L.marker([p[2],p[3]],{icon:pin(MT[p[1]][0],p[1]),title:p[0]}).addTo(lay).bindPopup(`<b>${p[0]}</b><br><i>${MT[p[1]][1]}</i><p>${p[4]}</p>`));
+$("mlist").innerHTML=items.length?items.map((p,i)=>`<button data-i="${i}"><span class="pin ${p[1]}">${MT[p[1]][0]}</span><span><b>${p[0]}</b><small>${MT[p[1]][1]}</small></span></button>`).join(""):"<p>No matches in the example list.</p>";
+cur=items;if(fit&&items.length)lm.fitBounds(items.map(p=>[p[2],p[3]]),{padding:[40,40],maxZoom:6})}
+const FL=[["all","All"],["dc","🗄️ Data centers"],["co","🏢 Companies"],["ed","🎓 Universities"]];
+function chips(){$("mfilt").innerHTML=FL.map(f=>`<button class="chip" data-f="${f[0]}" aria-pressed="${f[0]==flt}">${f[1]}</button>`).join("")}
+$("mfilt").onclick=e=>{const b=e.target.closest(".chip");if(!b)return;flt=b.dataset.f;chips();$("mstat").textContent="";draw(flt=="all"?MP:MP.filter(p=>p[1]==flt),true)};
+$("mlist").onclick=e=>{const b=e.target.closest("button");if(!b)return;const i=+b.dataset.i,p=cur[i];lm.flyTo([p[2],p[3]],8);MK[i].openPopup()};
+$("mreset").onclick=()=>{flt="all";$("mq").value="";$("mstat").textContent="";if(sm){lm.removeLayer(sm);sm=null}chips();draw(MP,false);lm.setView([25,10],2)};
+$("msearch").onsubmit=e=>{e.preventDefault();const q=$("mq").value.trim();if(!q)return;const ql=q.toLowerCase(),m=MP.filter(p=>p[0].toLowerCase().includes(ql)||MT[p[1]][1].toLowerCase().includes(ql));
+if(m.length){flt="all";chips();draw(m,true);$("mstat").textContent=`${m.length} example location${m.length>1?"s":""} found.`;return}
+$("mstat").textContent="Searching…";
+fetch("https://nominatim.openstreetmap.org/search?format=json&limit=1&q="+encodeURIComponent(q)).then(r=>r.json()).then(d=>{if(!d.length){$("mstat").textContent="No place found. Try another name.";return}
+const p=d[0],n=document.createElement("div");n.textContent=p.display_name;if(sm)lm.removeLayer(sm);sm=L.marker([+p.lat,+p.lon],{icon:pin("📍","sr")}).addTo(lm).bindPopup(n).openPopup();lm.flyTo([+p.lat,+p.lon],11);$("mstat").textContent="Showing your search result."}).catch(()=>{$("mstat").textContent="Search is unavailable right now. Check your connection."})};
+chips();draw(MP,false);
+}else{$("lmap").innerHTML="<p style='padding:1rem'>The map could not load. Check your internet connection.</p>"}
 const bg=document.querySelector(".burger"),mn=document.getElementById("menu");
 bg.onclick=()=>{const o=mn.classList.toggle("show");bg.setAttribute("aria-expanded",o)};mn.onclick=()=>mn.classList.remove("show");
