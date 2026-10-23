@@ -209,9 +209,10 @@
 <section id="chatbotsec" class="band">
   <div class="wrap section">
     <h2>Storage chatbot</h2>
-    <p class="sub">Ask about drives, capacity or security, get a recommendation, or review the chapter. Press Enter to send.</p>
+    <p class="sub">Chat about digital storage or just have a conversation. Your past chats are saved in your browser under History. Press Enter to send.</p>
     <div class="chat">
-      <div class="chead"><span class="cbadge" id="cmode"></span><button class="chip" id="cclear" type="button">Clear chat</button></div>
+      <div class="chead"><span class="cbadge" id="cmode"></span><span class="ctools"><button class="chip" id="chistbtn" type="button" aria-expanded="false" aria-controls="chist">🕘 History</button><button class="chip" id="cnew" type="button">＋ New chat</button><button class="chip" id="cclear" type="button">Delete chat</button></span></div>
+      <div class="chist" id="chist" hidden></div>
       <div class="clog" id="clog" role="log" aria-live="polite" aria-label="Chat messages"></div>
       <div class="chips" id="csug" aria-label="Suggested questions"></div>
       <form class="cform" id="cform"><input type="text" id="cin" placeholder="Type your question…" aria-label="Your question" maxlength="500" autocomplete="off"><button class="btn" type="submit" id="csend">Send</button></form>

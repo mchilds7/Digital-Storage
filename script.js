@@ -205,14 +205,23 @@ $("mvstage").innerHTML=`<iframe src="${src}" title="${esc(m.t)}" allow="fullscre
 mdraw();
 /* chatbot */
 const CHAT_API_URL=""; /* Paste your secure server URL here to enable the live AI. Never paste an API key. */
-const CK="storage-chat-v1";let hist=[],live=!!CHAT_API_URL,busy=false,rv=null;
-try{hist=JSON.parse(localStorage.getItem(CK)||"[]")}catch(e){hist=[]}
-const csave=()=>{try{localStorage.setItem(CK,JSON.stringify(hist.slice(-40)))}catch(e){}};
+const CK="storage-chat-v2";let convos=[],cc=null,hist=[],live=!!CHAT_API_URL,busy=false,rv=null;
+try{convos=JSON.parse(localStorage.getItem(CK)||"[]");if(!Array.isArray(convos))convos=[]}catch(e){convos=[]}
+try{const old=JSON.parse(localStorage.getItem("storage-chat-v1")||"[]");if(old.length&&!convos.length)convos.push({id:Date.now(),title:"Earlier chat",ts:Date.now(),msgs:old})}catch(e){}
+function newConvo(){cc={id:Date.now(),title:"New chat",ts:Date.now(),msgs:[]};convos.unshift(cc);hist=cc.msgs}
+const csave=()=>{if(cc&&cc.msgs.length){const f=cc.msgs.find(m=>m.r=="me");if(f)cc.title=f.t.slice(0,40);cc.ts=Date.now()}try{localStorage.setItem(CK,JSON.stringify(convos.filter(c=>c.msgs.length).slice(0,20).map(c=>({id:c.id,title:c.title,ts:c.ts,msgs:c.msgs.slice(-60)}))))}catch(e){}if(!$("chist").hidden)renderHist()};
 function badge(){$("cmode").textContent=live?"🟢 Live AI (Claude)":"🟡 Demo mode: predefined answers, not a live AI";$("cmode").className="cbadge "+(live?"live":"demo");
-$("cnote").textContent=live?"AI can make mistakes. Check important facts with your textbook.":"Demo answers come from this chapter's notes, so some questions won't be understood. A live AI needs a secure server (see chatbot-server/README.md)."}
+$("cnote").textContent=live?"AI can make mistakes. Check important facts with your textbook.":"Demo mode can chat a little and answer storage questions. For open conversation about any topic, connect the live AI (see chatbot-server/README.md)."}
 function cshow(m){const d=document.createElement("div");d.className="msg "+(m.r=="me"?"me":"bot")+(m.h?"":" txt");if(m.h)d.innerHTML=m.t;else d.textContent=m.t;$("clog").appendChild(d);$("clog").scrollTop=$("clog").scrollHeight;return d}
 function say(t,r,h){const m={r,t,h:!!h};hist.push(m);csave();return cshow(m)}
 const KB=[
+[["how are you","how r you","how do you do","whats up","what's up"],10,"I'm doing well, thanks for asking! I'm best at storage questions, so what would you like to know?"],
+[["who are you","your name","what are you","who made you"],10,"I'm the storage chatbot for this Chapter 7 website. In demo mode I use built-in notes. With a live AI connected, I can chat about almost anything."],
+[["what can you do","can you help","help me"],6,"I can explain storage concepts, compare HDDs, SSDs, USB drives and the cloud, recommend storage for your needs, work out how many files fit on a device, explain backup and security, and quiz you on the chapter."],
+[["joke","funny"],10,"Why don't hard drives ever win races? They keep going in circles!"],
+[["good morning","good afternoon","good evening"],10,"Hello! Hope your day is going well. What would you like to learn about storage?"],
+[["bye","goodbye","see you","good night"],10,"Goodbye! Come back any time to chat or review the chapter."],
+[["i love you","you are great","you're great","good job"],10,"Thank you, that's kind! Let me know if there's anything else I can help with."],
 [["compare","comparison","hdd ssd usb cloud","all four"],10,"Here is a quick comparison:<ul><li><b>HDD:</b> cheapest per GB and very large, but slower and fragile when running.</li><li><b>SSD:</b> fast and tough, but costs more per GB.</li><li><b>USB drive:</b> tiny and portable, but easy to lose and modest in size.</li><li><b>Cloud:</b> reach files anywhere and the provider backs them up, but you need internet and pay fees.</li></ul>See the <a href='#compare'>comparison table</a> to compare more."],
 [["hdd vs ssd","ssd vs hdd","hdd and ssd","ssd and hdd","hdd or ssd","ssd or hdd"],8,"An SSD uses flash chips with no moving parts, so it is much faster and tougher. An HDD uses spinning magnetic platters, so it costs far less per GB and holds huge amounts. Pick an SSD for speed and an HDD for cheap bulk storage."],
 [["hdd","hard drive","hard disk","platter","platters"],0,"An HDD (hard disk drive) stores data magnetically on spinning platters read by a moving head. It is cheap per GB and holds a lot, but it is slower and can break if dropped."],
@@ -241,11 +250,12 @@ const KB=[
 [["hello","hi","hey"],0,"Hello! Ask me about HDDs, SSDs, USB drives, the cloud, capacity or security, or tap \"Quiz me\" to review the chapter."],
 [["thanks","thank"],0,"You're welcome! Ask another question any time."]];
 const kre=k=>new RegExp("(^|[^a-z0-9])"+k.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"s?($|[^a-z0-9])");
-function demo(q){const m=q.match(/(\d+(?:\.\d+)?)\s*(tb|gb|mb)\b/i);
+function demo(q){if(/what('?s| is) (the )?(time|date|day)|what day (is|are)/i.test(q))return "Right now it is "+new Date().toLocaleString([],{weekday:"long",month:"long",day:"numeric",hour:"numeric",minute:"2-digit"})+" on your device.";
+const m=q.match(/(\d+(?:\.\d+)?)\s*(tb|gb|mb)\b/i);
 if(m&&/fit|store|hold|how many|photo|song|video|capacity/i.test(q)){const mb=+m[1]*{mb:1,gb:1e3,tb:1e6}[m[2].toLowerCase()];
 return `A ${m[1]} ${m[2].toUpperCase()} device holds roughly ${Math.floor(mb/4).toLocaleString()} phone photos (4 MB each), ${Math.floor(mb/4).toLocaleString()} MP3 songs (4 MB each) or ${Math.floor(mb/6e3).toLocaleString()} hours of HD video (6 GB per hour). Real space is a bit less. Try the <a href='#calculator'>calculator</a> for your own mix.`}
 q=q.toLowerCase();let best=0,ans=null;KB.forEach(([ks,b,a])=>{let sc=0;ks.forEach(k=>{if(kre(k).test(q))sc+=k.length+b});if(sc>best){best=sc;ans=a}});
-return ans||"I'm a demo bot, so I only know the topics in this chapter: HDD, SSD, NVMe, USB drives, memory cards, optical discs, cloud, capacity, backup, encryption and security. Try one of those, or tap \"Quiz me\"."}
+return ans||"I can't answer that in demo mode. I only know storage topics and some small talk. For open conversation about anything, the live AI has to be connected. Meanwhile, ask me about HDDs, SSDs, USB drives, the cloud, backups or security, or tap \"Quiz me\"."}
 /* review mode */
 const REV=[["Which storage has no moving parts?",["HDD","SSD","Optical drive"],1,"SSDs use flash chips, so nothing spins."],["Which is cheapest per GB?",["HDD","NVMe SSD","Memory card"],0,"HDDs give the most space for the least money."],["What does the 3-2-1 backup rule mean?",["3 copies, 2 media types, 1 off-site","3 drives, 2 passwords, 1 cloud account","3 backups a day"],0,"Spreading copies across media and places protects against any single failure."],["What does encryption do?",["Makes files smaller","Scrambles data so only a key holder can read it","Speeds up a drive"],1,"A stolen encrypted drive is unreadable without the key."],["Why is NVMe faster than SATA?",["It uses PCIe lanes","It spins faster","It uses a laser"],0,"PCIe offers far more bandwidth than SATA."],["About how many GB is 1 TB?",["100","1,000","1,000,000"],1,"Each unit is about 1,000 times the last."],["Cloud storage always needs…",["A DVD drive","An internet connection","A USB port"],1,"You reach cloud files over the internet."],["Which optical disc holds the most?",["CD","DVD","Blu-ray"],2,"The blue laser reads smaller pits, so Blu-ray fits more."]];
 function sug(){$("csug").innerHTML=["Compare HDD, SSD, USB and cloud","What is NVMe?","How many photos fit on 128 GB?","Recommend storage for gaming","Is my data safe?","Quiz me on the chapter"].map(q=>`<button class="chip">${q}</button>`).join("")}
@@ -263,7 +273,7 @@ if(rv){gradeRev(text);return}
 if(/^(quiz me|review|test me)/i.test(text)){startReview();return}
 if(!live){setTimeout(()=>say(demo(text),"bot",true),300);return}
 busy=true;$("csend").disabled=true;const w=cshow({r:"bot",t:"Thinking…"});
-try{let msgs=hist.map(m=>({role:m.r=="me"?"user":"assistant",content:m.t.replace(/<[^>]+>/g,"")}));while(msgs.length&&msgs[0].role!="user")msgs.shift();msgs=msgs.slice(-10);
+try{let msgs=hist.map(m=>({role:m.r=="me"?"user":"assistant",content:m.t.replace(/<[^>]+>/g,"")}));while(msgs.length&&msgs[0].role!="user")msgs.shift();msgs=msgs.slice(-20);
 const ac=new AbortController(),t=setTimeout(()=>ac.abort(),25000);
 const r=await fetch(CHAT_API_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:msgs}),signal:ac.signal});clearTimeout(t);
 if(!r.ok)throw 0;const d=await r.json();if(!d.reply)throw 0;w.remove();say(d.reply,"bot")}
@@ -271,9 +281,19 @@ catch(e){w.remove();live=false;badge();say("The live AI is not available right n
 finally{busy=false;$("csend").disabled=false}}
 $("cform").onsubmit=e=>{e.preventDefault();const v=$("cin").value;$("cin").value="";send(v)};
 $("csug").onclick=e=>{const b=e.target.closest(".chip");if(b)send(b.textContent)};
-function greet(){say("Hi! I'm the storage chatbot. Ask me to explain a concept, compare drives, recommend storage, or tap \"Quiz me\" to review the chapter.","bot")}
-$("cclear").onclick=()=>{hist=[];rv=null;$("clog").innerHTML="";csave();greet();sug()};
-hist.forEach(cshow);if(!hist.length)greet();badge();sug();
+const GREET='Hi! I am your storage chatbot. Ask me anything about digital storage, or just chat. Tap "Quiz me" to review the chapter.';
+function greet(){cshow({r:"bot",t:GREET})}
+function renderHist(){const L=convos.filter(c=>c.msgs.length);$("chist").innerHTML=L.length?L.map(c=>`<div class="hitem${c===cc?" on":""}"><button class="hopen" data-id="${c.id}">${esc(c.title)}<small>${new Date(c.ts).toLocaleString([],{month:"short",day:"numeric",hour:"numeric",minute:"2-digit"})}</small></button><button class="hdel" data-del="${c.id}" aria-label="Delete this conversation">✕</button></div>`).join(""):"<p class='note'>No saved conversations yet.</p>"}
+function render(){$("clog").innerHTML="";hist.forEach(cshow);if(!hist.length)greet();sug()}
+const idle=()=>{if(busy){say("Please wait for the reply to finish first.","bot");return false}return true};
+$("chistbtn").onclick=()=>{const p=$("chist");p.hidden=!p.hidden;$("chistbtn").setAttribute("aria-expanded",!p.hidden);if(!p.hidden)renderHist()};
+$("cnew").onclick=()=>{if(!idle())return;if(cc.msgs.length||!convos.includes(cc))newConvo();rv=null;render();$("chist").hidden=true;$("chistbtn").setAttribute("aria-expanded","false")};
+$("cclear").onclick=()=>{if(!idle())return;convos=convos.filter(c=>c!==cc);newConvo();rv=null;csave();render()};
+$("chist").onclick=e=>{if(!idle())return;const o=e.target.closest(".hopen"),d=e.target.closest(".hdel");
+if(o){const c=convos.find(x=>x.id==o.dataset.id);if(c){cc=c;hist=c.msgs;rv=null;render();$("chist").hidden=true;$("chistbtn").setAttribute("aria-expanded","false")}}
+else if(d){convos=convos.filter(x=>x.id!=d.dataset.del);if(!convos.includes(cc)){newConvo();rv=null;render()}csave();renderHist()}};
+if(convos.filter(c=>c.msgs.length).length){cc=convos.find(c=>c.msgs.length);hist=cc.msgs}else newConvo();
+render();badge();
 /* nav highlight */
 if("IntersectionObserver" in window){const lk=[...document.querySelectorAll("#menu a")],io=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting)lk.forEach(a=>{const on=a.getAttribute("href")=="#"+en.target.id;a.classList.toggle("active",on);if(on)a.setAttribute("aria-current","true");else a.removeAttribute("aria-current")})}),{rootMargin:"-45% 0px -50% 0px"});document.querySelectorAll(".group").forEach(g=>io.observe(g))}
 const bg=document.querySelector(".burger"),mn=document.getElementById("menu");

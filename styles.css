@@ -115,3 +115,6 @@ td small{display:block;color:var(--muted);font-size:.85rem;margin-top:.1rem}td.b
 .nav nav a.active{color:#fff;box-shadow:0 2px 0 var(--blue)}
 a.navcard{text-decoration:none;color:inherit;display:block}a.navcard h3{color:var(--navy)}
 .tk{padding-left:1.1rem;margin:0;color:var(--muted)}.gloss details{border-bottom:1px solid #e3ebf8;padding:.35rem 0}.gloss summary{cursor:pointer;font-weight:600;color:var(--navy)}.gloss p{margin:.3rem 0 .2rem;font-size:.95rem}
+
+.ctools{display:flex;gap:.4rem;flex-wrap:wrap}.chist{background:var(--bg);border:1px solid #dbe5f5;border-radius:12px;padding:.5rem;margin-bottom:.8rem;max-height:220px;overflow:auto}
+.hitem{display:flex;gap:.3rem;margin:.25rem 0}.hitem button{font:inherit;cursor:pointer;border:1px solid #c9d8f1;background:#fff;border-radius:8px;padding:.45rem .7rem}.hitem .hopen{flex:1;text-align:left}.hitem .hopen small{display:block;color:var(--muted)}.hitem.on .hopen{border-color:var(--blue);background:var(--sky)}.hitem .hdel{color:var(--bad)}
