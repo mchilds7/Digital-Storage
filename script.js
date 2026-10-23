@@ -139,5 +139,36 @@ fetch("https://nominatim.openstreetmap.org/search?format=json&limit=1&q="+encode
 const p=d[0],n=document.createElement("div");n.textContent=p.display_name;if(sm)lm.removeLayer(sm);sm=L.marker([+p.lat,+p.lon],{icon:pin("📍","sr")}).addTo(lm).bindPopup(n).openPopup();lm.flyTo([+p.lat,+p.lon],11);$("mstat").textContent="Showing your search result."}).catch(()=>{$("mstat").textContent="Search is unavailable right now. Check your connection."})};
 chips();draw(MP,false);
 }else{$("lmap").innerHTML="<p style='padding:1rem'>The map could not load. Check your internet connection.</p>"}
+/* weather */
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const WC={0:["Clear sky","☀️"],1:["Mainly clear","🌤️"],2:["Partly cloudy","⛅"],3:["Overcast","☁️"],45:["Fog","🌫️"],48:["Freezing fog","🌫️"],51:["Light drizzle","🌦️"],53:["Drizzle","🌦️"],55:["Heavy drizzle","🌦️"],56:["Freezing drizzle","🌧️"],57:["Freezing drizzle","🌧️"],61:["Light rain","🌧️"],63:["Rain","🌧️"],65:["Heavy rain","🌧️"],66:["Freezing rain","🌧️"],67:["Freezing rain","🌧️"],71:["Light snow","🌨️"],73:["Snow","🌨️"],75:["Heavy snow","❄️"],77:["Snow grains","🌨️"],80:["Rain showers","🌦️"],81:["Rain showers","🌧️"],82:["Violent rain showers","🌧️"],85:["Snow showers","🌨️"],86:["Heavy snow showers","❄️"],95:["Thunderstorm","⛈️"],96:["Thunderstorm with hail","⛈️"],99:["Thunderstorm with hail","⛈️"]};
+const wd=c=>WC[c]||["Unknown","❔"],wn=v=>v==null?"–":Math.round(v);
+const WPRE=[["New York",40.7128,-74.006,"United States"],["London",51.5072,-0.1276,"United Kingdom"],["Tokyo",35.6762,139.6503,"Japan"],["Sydney",-33.8688,151.2093,"Australia"],["Dubai",25.2048,55.2708,"United Arab Emirates"]];
+let wp=null,wun="c",wreq=0,wres=[];
+function wchips(){$("wpre").innerHTML=WPRE.map((p,i)=>`<button class="chip" data-i="${i}" aria-pressed="${!!wp&&wp.name==p[0]}">${p[0]}</button>`).join("");
+$("wun").innerHTML=[["c","°C · km/h"],["f","°F · mph"]].map(u=>`<button class="chip" data-u="${u[0]}" aria-pressed="${wun==u[0]}">${u[1]}</button>`).join("")}
+async function wload(p){wp=p;wchips();const id=++wreq,f=wun=="f";
+$("wout").innerHTML=`<p class="wload"><span class="spin2"></span> Loading weather for ${esc(p.name)}…</p>`;
+const url=`https://api.open-meteo.com/v1/forecast?latitude=${p.lat}&longitude=${p.lon}&current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=7&temperature_unit=${f?"fahrenheit":"celsius"}&wind_speed_unit=${f?"mph":"kmh"}`;
+try{const ac=new AbortController(),t=setTimeout(()=>ac.abort(),12000);const r=await fetch(url,{signal:ac.signal});clearTimeout(t);if(!r.ok)throw new Error("HTTP "+r.status);const d=await r.json();if(id!=wreq)return;if(!d.current||!d.daily)throw new Error("Unexpected response");wshow(p,d)}
+catch(e){if(id!=wreq)return;$("wout").innerHTML=`<div class="werr" role="alert"><b>Could not load weather.</b> ${e.name=="AbortError"?"The request timed out.":"The weather service did not respond."} No data is shown. <button class="chip" id="wretry">Try again</button></div>`;$("wretry").onclick=()=>wload(p)}}
+function wshow(p,d){const c=d.current,u=d.current_units||{},q=d.daily,[tx,ic]=wd(c.weather_code);
+const days=q.time.map((t,i)=>{const [cx,ci]=wd(q.weather_code[i]),nm=i==0?"Today":new Date(t+"T00:00:00").toLocaleDateString(undefined,{weekday:"short"});
+return`<div class="wday"><b>${nm}</b><span class="wi">${ci}</span><small>${cx}</small><div>${wn(q.temperature_2m_max[i])}° <small>${wn(q.temperature_2m_min[i])}°</small></div><small>💧 ${q.precipitation_probability_max[i]==null?"–":q.precipitation_probability_max[i]+"%"}</small></div>`}).join("");
+$("wout").innerHTML=`<div class="wnow"><div><h3>${esc(p.name)}${p.sub?", "+esc(p.sub):""}</h3><div class="wtemp">${wn(c.temperature_2m)}${esc(u.temperature_2m||"°")}</div><p>${ic} ${tx} · Feels like ${wn(c.apparent_temperature)}${esc(u.apparent_temperature||"°")}</p></div>
+<div class="wstats"><div><span>💧</span><b>${wn(c.relative_humidity_2m)}${esc(u.relative_humidity_2m||"%")}</b>Humidity</div><div><span>💨</span><b>${wn(c.wind_speed_10m)} ${esc(u.wind_speed_10m||"")}</b>Wind speed</div></div></div>
+<p class="note">Local time at this location when measured: ${esc(String(c.time).replace("T"," "))}</p><h3 class="wfh">7-day forecast</h3><div class="wfc">${days}</div>`}
+async function wsearch(q){const id=++wreq;$("wout").innerHTML=`<p class="wload"><span class="spin2"></span> Searching for “${esc(q)}”…</p>`;
+try{const r=await fetch("https://geocoding-api.open-meteo.com/v1/search?count=5&language=en&format=json&name="+encodeURIComponent(q));if(!r.ok)throw 0;const d=await r.json();if(id!=wreq)return;
+wres=(d.results||[]).map(x=>({name:x.name,sub:[x.admin1,x.country].filter(Boolean).join(", "),lat:x.latitude,lon:x.longitude}));
+if(!wres.length){$("wout").innerHTML=`<div class="werr" role="alert">No city found for “${esc(q)}”. Check the spelling or try another name.</div>`;return}
+if(wres.length==1){wload(wres[0]);return}
+$("wout").innerHTML=`<p><b>Select a location</b></p><div class="wchoices">${wres.map((x,i)=>`<button data-i="${i}">${esc(x.name)} <small>${esc(x.sub)}</small></button>`).join("")}</div>`}
+catch(e){if(id!=wreq)return;$("wout").innerHTML=`<div class="werr" role="alert"><b>Search failed.</b> The location service did not respond. Check your connection and try again.</div>`}}
+$("wsearch").onsubmit=e=>{e.preventDefault();const q=$("wq").value.trim();if(q)wsearch(q)};
+$("wpre").onclick=e=>{const b=e.target.closest(".chip");if(!b)return;const p=WPRE[b.dataset.i];wload({name:p[0],sub:p[3],lat:p[1],lon:p[2]})};
+$("wun").onclick=e=>{const b=e.target.closest(".chip");if(!b)return;wun=b.dataset.u;wchips();if(wp)wload(wp)};
+$("wout").onclick=e=>{const b=e.target.closest(".wchoices button");if(b)wload(wres[b.dataset.i])};
+wchips();wload({name:WPRE[0][0],sub:WPRE[0][3],lat:WPRE[0][1],lon:WPRE[0][2]});
 const bg=document.querySelector(".burger"),mn=document.getElementById("menu");
 bg.onclick=()=>{const o=mn.classList.toggle("show");bg.setAttribute("aria-expanded",o)};mn.onclick=()=>mn.classList.remove("show");
