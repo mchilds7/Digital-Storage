@@ -189,5 +189,19 @@ const src=v.kind=="ted"?`https://embed.ted.com/talks/${v.id}`:`https://www.youtu
 w.innerHTML=`<iframe src="${src}" title="${esc(v.t)}" allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
 if(!au.paused)au.pause()};
 vdraw();
+/* movies */
+const MV=[
+{t:"How Safe Are You Really?",sub:"TEDx talk · information security",kind:"ted",id:"will_schmidt_how_safe_are_you_really",ico:"🔐",d:"Explores how and why hackers go after your passwords and personal information. It pairs well with this chapter's backup and security section.",lic:"Shown with TED's official embed player.",link:"https://www.ted.com/talks/will_schmidt_how_safe_are_you_really",src:"TED"},
+{t:"When You Are a Pedestrian",sub:"1948 · public-domain educational film",kind:"ia",id:"WhenYouA1948",ico:"🎞️",thumb:"https://archive.org/services/img/WhenYouA1948",d:"A 1948 educational short about pedestrian safety. It was the first film in the Prelinger Archives collection, which is now free for anyone to watch and reuse.",lic:"Public domain. Hosted by the Internet Archive.",link:"https://archive.org/details/WhenYouA1948",src:"the Internet Archive"}];
+let mi=0;
+const mposter=m=>`<button class="vposter" aria-label="Play film: ${esc(m.t)}">${m.thumb?`<img src="${m.thumb}" alt="" onerror="this.remove()">`:`<span class="vico">${m.ico}</span>`}<span class="mpost"><small>${esc(m.sub)}</small><b>${esc(m.t)}</b></span><span class="vplay">▶</span></button>`;
+function mdraw(){const m=MV[mi];
+$("mvsel").innerHTML=MV.map((f,i)=>`<button class="chip" data-i="${i}" aria-pressed="${i==mi}">${f.ico} ${esc(f.t)}</button>`).join("");
+$("mvstage").innerHTML=mposter(m);
+$("mvinfo").innerHTML=`<span class="vtag">${esc(m.sub)}</span><h3>${esc(m.t)}</h3><p>${m.d}</p><p class="vsrc">${m.lic}</p><a href="${m.link}" target="_blank" rel="noopener">Open on ${m.src} ↗</a><p class="note">If the film does not load or your school blocks the player, use the link above to watch it directly.</p>`}
+$("mvsel").onclick=e=>{const b=e.target.closest(".chip");if(b){mi=+b.dataset.i;mdraw()}};
+$("mvstage").onclick=e=>{if(!e.target.closest(".vposter"))return;const m=MV[mi],src=m.kind=="ted"?`https://embed.ted.com/talks/${m.id}`:`https://archive.org/embed/${m.id}`;
+$("mvstage").innerHTML=`<iframe src="${src}" title="${esc(m.t)}" allow="fullscreen; picture-in-picture; encrypted-media" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;if(!au.paused)au.pause()};
+mdraw();
 const bg=document.querySelector(".burger"),mn=document.getElementById("menu");
 bg.onclick=()=>{const o=mn.classList.toggle("show");bg.setAttribute("aria-expanded",o)};mn.onclick=()=>mn.classList.remove("show");
