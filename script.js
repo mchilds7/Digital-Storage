@@ -170,5 +170,24 @@ $("wpre").onclick=e=>{const b=e.target.closest(".chip");if(!b)return;const p=WPR
 $("wun").onclick=e=>{const b=e.target.closest(".chip");if(!b)return;wun=b.dataset.u;wchips();if(wp)wload(wp)};
 $("wout").onclick=e=>{const b=e.target.closest(".wchoices button");if(b)wload(wres[b.dataset.i])};
 wchips();wload({name:WPRE[0][0],sub:WPRE[0][3],lat:WPRE[0][1],lon:WPRE[0][2]});
+/* videos */
+const VT={dev:"How HDDs and SSDs work",diff:"HDD vs SSD",cloud:"Cloud and data centers",sec:"Cybersecurity"};
+const VID=[
+{t:"How do hard drives work?",src:"TED-Ed",len:"about 5 min",topic:"dev",kind:"ted",id:"kanawat_senanan_how_do_hard_drives_work",ico:"💽",d:"An animated lesson on how a hard drive stores so much information in such a small space, and the engineers and scientists who made it possible.",link:"https://www.ted.com/talks/kanawat_senanan_how_do_hard_drives_work"},
+{t:"What's the difference between HDD and SSD?",src:"Mr Long Computer Terms",len:"YouTube",topic:"diff",kind:"yt",id:"xlwghmT6NWc",ico:"⚡",d:"Explains what an HDD and an SSD are, how each one stores data, and how the two differ.",link:"https://www.youtube.com/watch?v=xlwghmT6NWc"},
+{t:"Cloud Computing: How it all works",src:"YouTube animation (2012)",len:"short",topic:"cloud",kind:"yt",id:"TTNgV0O_oTg",ico:"☁️",d:"Shows that files you upload are kept in data centers, which are warehouses of powerful computers around the world. It is an older video, so the services it names may look dated.",link:"https://www.youtube.com/watch?v=TTNgV0O_oTg"},
+{t:"What's wrong with your pa$$w0rd?",src:"Lorrie Faith Cranor · TED",len:"TED Talk",topic:"sec",kind:"ted",id:"lorrie_faith_cranor_what_s_wrong_with_your_pa_w0rd",ico:"🔐",d:"A researcher studied thousands of real passwords to find the common mistakes people and websites make, which helps you protect your accounts.",link:"https://www.ted.com/talks/lorrie_faith_cranor_what_s_wrong_with_your_pa_w0rd"}];
+const vposter=(v,i)=>`<button class="vposter" data-i="${i}" aria-label="Play video: ${esc(v.t)}">${v.kind=="yt"?`<img src="https://i.ytimg.com/vi/${v.id}/hqdefault.jpg" alt="" loading="lazy" onerror="this.parentNode.dataset.bad=1;this.remove()">`:`<span class="vico">${v.ico}</span>`}<span class="vplay">▶</span><span class="vlabel">Play video</span></button>`;
+let vf="all",vp=null;
+function vdraw(){vp=null;$("vfilt").innerHTML=[["all","All"],...Object.entries(VT)].map(([k,l])=>`<button class="chip" data-f="${k}" aria-pressed="${k==vf}">${l}</button>`).join("");
+$("vgrid").innerHTML=VID.map((v,i)=>[v,i]).filter(([v])=>vf=="all"||v.topic==vf).map(([v,i])=>`<article class="vcard"><div class="vwrap" id="vw${i}">${vposter(v,i)}</div><div class="vbody"><span class="vtag">${VT[v.topic]}</span><h3>${esc(v.t)}</h3><p class="vsrc">${esc(v.src)} · ${v.len}</p><p>${v.d}</p><a href="${v.link}" target="_blank" rel="noopener">Open on ${v.kind=="ted"?"TED":"YouTube"} ↗</a></div></article>`).join("")}
+$("vfilt").onclick=e=>{const b=e.target.closest(".chip");if(b){vf=b.dataset.f;vdraw()}};
+$("vgrid").onclick=e=>{const b=e.target.closest(".vposter");if(!b)return;const i=+b.dataset.i,v=VID[i],w=$("vw"+i);
+if(b.dataset.bad){if(!w.querySelector(".vmsg"))w.insertAdjacentHTML("beforeend",`<p class="vmsg">This video could not be confirmed and may have been removed. Try the "Open on YouTube" link below.</p>`);return}
+if(vp!==null&&vp!==i&&$("vw"+vp))$("vw"+vp).innerHTML=vposter(VID[vp],vp);vp=i;
+const src=v.kind=="ted"?`https://embed.ted.com/talks/${v.id}`:`https://www.youtube-nocookie.com/embed/${v.id}?autoplay=1&rel=0`;
+w.innerHTML=`<iframe src="${src}" title="${esc(v.t)}" allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+if(!au.paused)au.pause()};
+vdraw();
 const bg=document.querySelector(".burger"),mn=document.getElementById("menu");
 bg.onclick=()=>{const o=mn.classList.toggle("show");bg.setAttribute("aria-expanded",o)};mn.onclick=()=>mn.classList.remove("show");
