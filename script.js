@@ -203,5 +203,76 @@ $("mvsel").onclick=e=>{const b=e.target.closest(".chip");if(b){mi=+b.dataset.i;m
 $("mvstage").onclick=e=>{if(!e.target.closest(".vposter"))return;const m=MV[mi],src=m.kind=="ted"?`https://embed.ted.com/talks/${m.id}`:`https://archive.org/embed/${m.id}`;
 $("mvstage").innerHTML=`<iframe src="${src}" title="${esc(m.t)}" allow="fullscreen; picture-in-picture; encrypted-media" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;if(!au.paused)au.pause()};
 mdraw();
+/* chatbot */
+const CHAT_API_URL=""; /* Paste your secure server URL here to enable the live AI. Never paste an API key. */
+const CK="storage-chat-v1";let hist=[],live=!!CHAT_API_URL,busy=false,rv=null;
+try{hist=JSON.parse(localStorage.getItem(CK)||"[]")}catch(e){hist=[]}
+const csave=()=>{try{localStorage.setItem(CK,JSON.stringify(hist.slice(-40)))}catch(e){}};
+function badge(){$("cmode").textContent=live?"🟢 Live AI (Claude)":"🟡 Demo mode: predefined answers, not a live AI";$("cmode").className="cbadge "+(live?"live":"demo");
+$("cnote").textContent=live?"AI can make mistakes. Check important facts with your textbook.":"Demo answers come from this chapter's notes, so some questions won't be understood. A live AI needs a secure server (see chatbot-server/README.md)."}
+function cshow(m){const d=document.createElement("div");d.className="msg "+(m.r=="me"?"me":"bot")+(m.h?"":" txt");if(m.h)d.innerHTML=m.t;else d.textContent=m.t;$("clog").appendChild(d);$("clog").scrollTop=$("clog").scrollHeight;return d}
+function say(t,r,h){const m={r,t,h:!!h};hist.push(m);csave();return cshow(m)}
+const KB=[
+[["compare","comparison","hdd ssd usb cloud","all four"],10,"Here is a quick comparison:<ul><li><b>HDD:</b> cheapest per GB and very large, but slower and fragile when running.</li><li><b>SSD:</b> fast and tough, but costs more per GB.</li><li><b>USB drive:</b> tiny and portable, but easy to lose and modest in size.</li><li><b>Cloud:</b> reach files anywhere and the provider backs them up, but you need internet and pay fees.</li></ul>See the <a href='#compare'>comparison table</a> to compare more."],
+[["hdd vs ssd","ssd vs hdd","hdd and ssd","ssd and hdd","hdd or ssd","ssd or hdd"],8,"An SSD uses flash chips with no moving parts, so it is much faster and tougher. An HDD uses spinning magnetic platters, so it costs far less per GB and holds huge amounts. Pick an SSD for speed and an HDD for cheap bulk storage."],
+[["hdd","hard drive","hard disk","platter","platters"],0,"An HDD (hard disk drive) stores data magnetically on spinning platters read by a moving head. It is cheap per GB and holds a lot, but it is slower and can break if dropped."],
+[["ssd","solid state","solid-state","flash memory"],0,"An SSD (solid-state drive) keeps data in flash memory chips. With no moving parts it is fast, quiet and tough, but costs more per GB than an HDD."],
+[["nvme","pcie","m.2"],0,"NVMe SSDs connect over PCIe lanes and reach about 3,000 to 7,000+ MB/s, far faster than SATA. They suit gaming and video editing."],
+[["sata"],0,"SATA is an older drive connection. SATA SSDs top out near 550 MB/s, still much faster than an HDD, and work in older computers."],
+[["usb","flash drive","thumb drive","pen drive"],0,"A USB flash drive is a small plug-in flash stick. It is portable and cheap, perfect for moving files, but easy to lose and slower than an SSD."],
+[["sd card","memory card","microsd","sd"],0,"Memory cards (SD and microSD) are small removable flash cards for cameras, phones and consoles. Choose a fast speed class for video."],
+[["cd","dvd","blu-ray","bluray","optical","disc"],0,"Optical discs are read by a laser. A CD holds about 700 MB, a DVD 4.7 GB and a Blu-ray 25 GB or more. They are cheap but slow and scratch easily."],
+[["cloud","google drive","onedrive","dropbox","icloud","data center","datacenter"],0,"Cloud storage keeps your files on a provider's servers in data centers, so you can reach them from any device with internet. See data centers on the <a href='#map'>map</a>."],
+[["ram","volatile","memory"],0,"RAM is fast working memory that clears when power is off. Storage keeps data permanently. Your computer loads files from storage into RAM to use them."],
+[["kb","mb","gb","tb","byte","bytes","bit","bits","capacity","units"],0,"Each unit is about 1,000 times the last: KB, MB, GB, TB. A phone photo is a few MB, a film a few GB. Ask me something like \"how many photos fit on 128 GB?\""],
+[["speed","fast","faster","slow","mb/s"],0,"NVMe SSDs are fastest, then SATA SSDs, then HDDs. Optical discs and slow cards are slowest. Cloud speed depends on your internet."],
+[["durable","durability","cost","price","portable","portability"],0,"Judge storage by capacity, speed, durability, portability and cost. HDDs win on cost per GB, SSDs on speed and durability, USB drives and cards on portability."],
+[["backup","back up","3-2-1","321","restore"],0,"Follow the 3-2-1 rule: keep 3 copies of your data, on 2 different types of media, with 1 copy off-site, such as the cloud."],
+[["encrypt","encrypted","encryption","bitlocker","filevault"],0,"Encryption scrambles data so only someone with the key can read it. Turn on BitLocker (Windows) or FileVault (Mac) so a lost drive stays private."],
+[["security","secure","safe","protect","password","passwords","hacker","malware","ransomware","2fa","virus"],0,"To keep data safe: use strong, unique passwords, turn on two-factor authentication, keep software updated, encrypt drives, and keep backups in case of malware. See the <a href='#security'>security checklist</a>."],
+[["game","games","gaming","gamer"],10,"For gaming, an NVMe SSD (1 TB or more) gives the shortest load times. On a budget, use a SATA SSD for favorite games and an HDD for the rest."],
+[["school","homework","student","assignment"],10,"For schoolwork, a laptop SSD plus cloud storage is ideal. On a budget, a USB flash drive plus free cloud storage works well. Keep a second copy of important work."],
+[["photo","photos","photography","camera"],10,"For photography, use fast memory cards in the camera, an NVMe SSD for editing, and an HDD plus cloud for long-term backups."],
+[["business","company","office"],10,"For business, use encrypted drives, managed cloud storage with access controls, and regular backups kept off-site."],
+[["cheap","budget","cheapest","affordable"],10,"On a budget, an HDD gives the most space per dollar, and a USB flash drive is a cheap way to carry files. Add free cloud storage for a backup copy."],
+[["carry","travel","portable storage"],10,"To carry files, a USB flash drive or a small external SSD is best. Memory cards work for cameras and phones."],
+[["share","team","collaborate"],10,"To share files with others, use cloud storage. Everyone can reach the same files from anywhere."],
+[["recommend","suggest","which storage","what should i buy","best storage","help me choose"],0,"Happy to help! Tell me what you need it for (gaming, schoolwork, photos, business or backups) and whether cost, speed or portability matters most. You can also try the <a href='#recommend'>recommendation tool</a>."],
+[["hello","hi","hey"],0,"Hello! Ask me about HDDs, SSDs, USB drives, the cloud, capacity or security, or tap \"Quiz me\" to review the chapter."],
+[["thanks","thank"],0,"You're welcome! Ask another question any time."]];
+const kre=k=>new RegExp("(^|[^a-z0-9])"+k.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"s?($|[^a-z0-9])");
+function demo(q){const m=q.match(/(\d+(?:\.\d+)?)\s*(tb|gb|mb)\b/i);
+if(m&&/fit|store|hold|how many|photo|song|video|capacity/i.test(q)){const mb=+m[1]*{mb:1,gb:1e3,tb:1e6}[m[2].toLowerCase()];
+return `A ${m[1]} ${m[2].toUpperCase()} device holds roughly ${Math.floor(mb/4).toLocaleString()} phone photos (4 MB each), ${Math.floor(mb/4).toLocaleString()} MP3 songs (4 MB each) or ${Math.floor(mb/6e3).toLocaleString()} hours of HD video (6 GB per hour). Real space is a bit less. Try the <a href='#calculator'>calculator</a> for your own mix.`}
+q=q.toLowerCase();let best=0,ans=null;KB.forEach(([ks,b,a])=>{let sc=0;ks.forEach(k=>{if(kre(k).test(q))sc+=k.length+b});if(sc>best){best=sc;ans=a}});
+return ans||"I'm a demo bot, so I only know the topics in this chapter: HDD, SSD, NVMe, USB drives, memory cards, optical discs, cloud, capacity, backup, encryption and security. Try one of those, or tap \"Quiz me\"."}
+/* review mode */
+const REV=[["Which storage has no moving parts?",["HDD","SSD","Optical drive"],1,"SSDs use flash chips, so nothing spins."],["Which is cheapest per GB?",["HDD","NVMe SSD","Memory card"],0,"HDDs give the most space for the least money."],["What does the 3-2-1 backup rule mean?",["3 copies, 2 media types, 1 off-site","3 drives, 2 passwords, 1 cloud account","3 backups a day"],0,"Spreading copies across media and places protects against any single failure."],["What does encryption do?",["Makes files smaller","Scrambles data so only a key holder can read it","Speeds up a drive"],1,"A stolen encrypted drive is unreadable without the key."],["Why is NVMe faster than SATA?",["It uses PCIe lanes","It spins faster","It uses a laser"],0,"PCIe offers far more bandwidth than SATA."],["About how many GB is 1 TB?",["100","1,000","1,000,000"],1,"Each unit is about 1,000 times the last."],["Cloud storage always needs…",["A DVD drive","An internet connection","A USB port"],1,"You reach cloud files over the internet."],["Which optical disc holds the most?",["CD","DVD","Blu-ray"],2,"The blue laser reads smaller pits, so Blu-ray fits more."]];
+function sug(){$("csug").innerHTML=["Compare HDD, SSD, USB and cloud","What is NVMe?","How many photos fit on 128 GB?","Recommend storage for gaming","Is my data safe?","Quiz me on the chapter"].map(q=>`<button class="chip">${q}</button>`).join("")}
+function askRev(){const q=REV[rv.i];say(`Question ${rv.i+1} of ${REV.length}: ${q[0]}`,"bot");$("csug").innerHTML=q[1].map(o=>`<button class="chip">${o}</button>`).join("")}
+function startReview(){rv={i:0,s:0};say("Let's review the chapter. Pick an answer below, or type \"stop\" to end.","bot");askRev()}
+function endReview(msg){say(msg,"bot");rv=null;sug()}
+function gradeRev(t){const q=REV[rv.i];if(/^stop$/i.test(t.trim()))return endReview("Review ended. Ask me anything else!");
+let k=q[1].findIndex(o=>o.toLowerCase()==t.trim().toLowerCase());if(k<0){const l="abc".indexOf(t.trim().toLowerCase());if(t.trim().length==1&&l>=0&&l<q[1].length)k=l}
+if(k<0){say("Please choose one of the options, or type \"stop\".","bot");return}
+const ok=k==q[2];if(ok)rv.s++;say((ok?"Correct! ":"Not quite. The answer is: "+q[1][q[2]]+". ")+q[3],"bot");rv.i++;
+if(rv.i>=REV.length)endReview(`Review finished. You scored ${rv.s} out of ${REV.length}.`);else askRev()}
+/* sending */
+async function send(text){text=text.trim();if(!text||busy)return;say(text,"me");
+if(rv){gradeRev(text);return}
+if(/^(quiz me|review|test me)/i.test(text)){startReview();return}
+if(!live){setTimeout(()=>say(demo(text),"bot",true),300);return}
+busy=true;$("csend").disabled=true;const w=cshow({r:"bot",t:"Thinking…"});
+try{let msgs=hist.map(m=>({role:m.r=="me"?"user":"assistant",content:m.t.replace(/<[^>]+>/g,"")}));while(msgs.length&&msgs[0].role!="user")msgs.shift();msgs=msgs.slice(-10);
+const ac=new AbortController(),t=setTimeout(()=>ac.abort(),25000);
+const r=await fetch(CHAT_API_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({messages:msgs}),signal:ac.signal});clearTimeout(t);
+if(!r.ok)throw 0;const d=await r.json();if(!d.reply)throw 0;w.remove();say(d.reply,"bot")}
+catch(e){w.remove();live=false;badge();say("The live AI is not available right now, so I switched to demo mode.","bot");say(demo(text),"bot",true)}
+finally{busy=false;$("csend").disabled=false}}
+$("cform").onsubmit=e=>{e.preventDefault();const v=$("cin").value;$("cin").value="";send(v)};
+$("csug").onclick=e=>{const b=e.target.closest(".chip");if(b)send(b.textContent)};
+function greet(){say("Hi! I'm the storage chatbot. Ask me to explain a concept, compare drives, recommend storage, or tap \"Quiz me\" to review the chapter.","bot")}
+$("cclear").onclick=()=>{hist=[];rv=null;$("clog").innerHTML="";csave();greet();sug()};
+hist.forEach(cshow);if(!hist.length)greet();badge();sug();
 const bg=document.querySelector(".burger"),mn=document.getElementById("menu");
 bg.onclick=()=>{const o=mn.classList.toggle("show");bg.setAttribute("aria-expanded",o)};mn.onclick=()=>mn.classList.remove("show");
