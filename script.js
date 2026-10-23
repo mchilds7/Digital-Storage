@@ -274,5 +274,7 @@ $("csug").onclick=e=>{const b=e.target.closest(".chip");if(b)send(b.textContent)
 function greet(){say("Hi! I'm the storage chatbot. Ask me to explain a concept, compare drives, recommend storage, or tap \"Quiz me\" to review the chapter.","bot")}
 $("cclear").onclick=()=>{hist=[];rv=null;$("clog").innerHTML="";csave();greet();sug()};
 hist.forEach(cshow);if(!hist.length)greet();badge();sug();
+/* nav highlight */
+if("IntersectionObserver" in window){const lk=[...document.querySelectorAll("#menu a")],io=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting)lk.forEach(a=>{const on=a.getAttribute("href")=="#"+en.target.id;a.classList.toggle("active",on);if(on)a.setAttribute("aria-current","true");else a.removeAttribute("aria-current")})}),{rootMargin:"-45% 0px -50% 0px"});document.querySelectorAll(".group").forEach(g=>io.observe(g))}
 const bg=document.querySelector(".burger"),mn=document.getElementById("menu");
 bg.onclick=()=>{const o=mn.classList.toggle("show");bg.setAttribute("aria-expanded",o)};mn.onclick=()=>mn.classList.remove("show");

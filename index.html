@@ -12,28 +12,30 @@
 </head>
 <body>
 <header class="nav">
-  <a class="brand" href="#top"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6" fill="none" stroke="currentColor" stroke-width="2"/></svg>Digital Storage</a>
+  <a class="brand" href="#home"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6" fill="none" stroke="currentColor" stroke-width="2"/></svg>Digital Storage</a>
   <button class="burger" aria-label="Toggle menu" aria-expanded="false">☰</button>
-  <nav id="menu"><a href="#basics">Intro</a><a href="#types">Technologies</a><a href="#compare">Compare</a><a href="#security">Security</a><a href="#calculator">Calculator</a><a href="#recommend">Recommend</a><a href="#quiz">Quiz</a><a href="#music">Music</a><a href="#map">Map</a><a href="#weather">Weather</a><a href="#videos">Videos</a><a href="#movies">Movies</a><a href="#chatbot">Chatbot</a></nav>
+  <nav id="menu" aria-label="Main"><a href="#home">Home</a><a href="#fundamentals">Fundamentals</a><a href="#comparison">Comparison</a><a href="#tools">Tools</a><a href="#music">Music</a><a href="#map">Map</a><a href="#weather">Weather</a><a href="#videos">Videos</a><a href="#movies">Movies</a><a href="#chatbot">Chatbot</a><a href="#quiz">Quiz</a></nav>
 </header>
 
 <main id="top">
+<div class="group" id="home"><div class="gh"><span>01</span> Home</div>
 <section class="hero">
   <div class="wrap hero-grid">
     <div>
       <p class="tag">Chapter 7</p>
       <h1>Which storage fits the job?</h1>
       <p class="lead">Hard drives, SSDs, flash drives, discs and the cloud all keep data. They differ in speed, cost, size and durability. Learn to compare them and pick the best one for any situation.</p>
-      <a class="btn" href="#calculator">Try the interactive tools</a>
-      <a class="btn ghost" href="#types">Explore technologies</a>
+      <a class="btn" href="#tools">Try the interactive tools</a>
+      <a class="btn ghost" href="#comparison">Explore technologies</a>
     </div>
     <div class="race" aria-label="Relative speed of storage types">
       <h2>Relative speed</h2>
       <div class="bar-row"><span>NVMe SSD</span><i style="--w:100%"></i></div><div class="bar-row"><span>SATA SSD</span><i style="--w:62%"></i></div><div class="bar-row"><span>USB flash</span><i style="--w:45%"></i></div><div class="bar-row"><span>HDD</span><i style="--w:30%"></i></div><div class="bar-row"><span>Blu-ray</span><i style="--w:10%"></i></div><small>Not to scale. Cloud speed depends on your internet connection.</small>
     </div>
   </div>
-</section>
-
+</section><section class="wrap section" id="explore"><h2>Explore the website</h2><p class="sub">Everything on this site works together. Pick a section to jump straight to it.</p><div class="grid4"><a class="card navcard" href="#fundamentals"><div class="ico">📘</div><h3>Fundamentals</h3><p>Bits, bytes, key properties, backup and security</p></a><a class="card navcard" href="#comparison"><div class="ico">⚖️</div><h3>Technology Comparison</h3><p>Nine storage types side by side</p></a><a class="card navcard" href="#tools"><div class="ico">🧮</div><h3>Interactive Tools</h3><p>Storage calculator and recommendation tool</p></a><a class="card navcard" href="#music"><div class="ico">🎵</div><h3>Music Player</h3><p>Study music that plays only when you choose</p></a><a class="card navcard" href="#map"><div class="ico">🗺️</div><h3>Interactive Map</h3><p>Data centers, companies and universities</p></a><a class="card navcard" href="#weather"><div class="ico">⛅</div><h3>Weather Dashboard</h3><p>Live weather for any city</p></a><a class="card navcard" href="#videos"><div class="ico">🎬</div><h3>Educational Videos</h3><p>Explainers on drives, cloud and security</p></a><a class="card navcard" href="#movies"><div class="ico">🍿</div><h3>Movie Theater</h3><p>Full films with a poster and player</p></a><a class="card navcard" href="#chatbot"><div class="ico">💬</div><h3>AI Chatbot</h3><p>Ask questions and review the chapter</p></a><a class="card navcard" href="#quiz"><div class="ico">📝</div><h3>Quiz and Resources</h3><p>Quiz, takeaways and glossary</p></a></div></section>
+</div>
+<div class="group" id="fundamentals"><div class="gh"><span>02</span> Digital Storage Fundamentals</div>
 <section id="basics" class="wrap section">
   <h2>Introduction to digital storage</h2>
   <p class="sub">Digital storage keeps data as bits, which are 0s and 1s. Eight bits make a byte, and every file you save, from a note to a movie, is a long list of bytes.</p>
@@ -42,20 +44,7 @@
     <article class="card"><div class="ico">🧲</div><h3>How bits are kept</h3><p>Magnetic drives flip tiny magnetic regions. Flash drives trap electric charge in chips. Optical discs use a laser to read pits. Cloud storage keeps files on a provider's servers.</p></article>
     <article class="card"><div class="ico">📏</div><h3>Capacity units</h3><p>1 KB, MB, GB and TB are each about 1,000 times bigger than the last. A phone photo is a few MB, a film is a few GB, and a laptop drive holds hundreds of GB to a few TB.</p></article>
   </div>
-</section>
-
-<section id="types" class="band">
-  <div class="wrap section">
-    <h2>Storage technologies</h2>
-    <p class="sub">Filter by type, then select a card to see its strengths and weaknesses.</p>
-    <div class="filters" role="tablist">
-      <button class="chip on" data-f="all">All</button><button class="chip" data-f="magnetic">Magnetic</button><button class="chip" data-f="solid">Solid-state</button><button class="chip" data-f="optical">Optical</button><button class="chip" data-f="cloud">Cloud</button>
-    </div>
-    <div class="grid4" id="cards"></div>
-  </div>
-</section>
-
-<section id="properties" class="wrap section">
+</section><section id="properties" class="wrap section">
   <h2>Five properties to judge storage</h2>
   <p class="sub">Every choice is a trade-off between these five.</p>
   <div class="grid4">
@@ -65,19 +54,7 @@
     <article class="card"><div class="ico">🎒</div><h3>Portability</h3><p>How easy it is to carry and plug into other devices. Small and removable is best.</p></article>
     <article class="card"><div class="ico">💲</div><h3>Cost</h3><p>Compare price per GB, not only the sticker price. Cloud adds a monthly fee.</p></article>
   </div>
-</section>
-
-<section id="compare" class="band">
-  <div class="wrap section">
-    <h2>Compare storage technologies</h2>
-    <p class="sub">Select 2 to 4 technologies. The best score in each row is highlighted.</p>
-    <div class="filters" id="pick" aria-label="Choose technologies to compare"></div>
-    <div class="scroll"><table id="tbl"></table></div>
-    <p class="note">Figures are typical ranges for current consumer products and vary by model and price. Ratings are out of 5; for cost, 5 means cheapest per GB.</p>
-  </div>
-</section>
-
-<section id="security" class="wrap section">
+</section><section id="security" class="wrap section">
   <h2>Backup, encryption and information security</h2>
   <div class="grid3">
     <article class="card"><div class="ico">🔁</div><h3>Data backup</h3><p>Any drive can fail, so keep copies. The <b>3-2-1 rule</b> means 3 copies of your data, on 2 different types of storage, with 1 copy off-site (such as the cloud).</p></article>
@@ -90,7 +67,28 @@
     <p class="fb" id="prog" aria-live="polite"></p>
   </div>
 </section>
-
+</div>
+<div class="group" id="comparison"><div class="gh"><span>03</span> Storage Technology Comparison</div>
+<section id="types" class="band">
+  <div class="wrap section">
+    <h2>Storage technologies</h2>
+    <p class="sub">Filter by type, then select a card to see its strengths and weaknesses.</p>
+    <div class="filters" role="tablist">
+      <button class="chip on" data-f="all">All</button><button class="chip" data-f="magnetic">Magnetic</button><button class="chip" data-f="solid">Solid-state</button><button class="chip" data-f="optical">Optical</button><button class="chip" data-f="cloud">Cloud</button>
+    </div>
+    <div class="grid4" id="cards"></div>
+  </div>
+</section><section id="compare" class="band">
+  <div class="wrap section">
+    <h2>Compare storage technologies</h2>
+    <p class="sub">Select 2 to 4 technologies. The best score in each row is highlighted.</p>
+    <div class="filters" id="pick" aria-label="Choose technologies to compare"></div>
+    <div class="scroll"><table id="tbl"></table></div>
+    <p class="note">Figures are typical ranges for current consumer products and vary by model and price. Ratings are out of 5; for cost, 5 means cheapest per GB.</p>
+  </div>
+</section>
+</div>
+<div class="group" id="tools"><div class="gh"><span>04</span> Interactive Tools</div>
 <section id="calculator" class="band">
   <div class="wrap section">
     <h2>Storage calculator</h2>
@@ -116,19 +114,16 @@
       </div>
     </div>
   </div>
-</section>
-
-<section id="recommend" class="wrap section">
+</section><section id="recommend" class="wrap section">
   <h2>Recommendation tool</h2>
   <p class="sub">Choose how you will use storage and what matters most.</p>
   <div class="chips" id="uses" aria-label="Use case"></div>
   <div class="chips" id="prio" aria-label="Priority"></div>
   <div class="result" id="rec" aria-live="polite"></div>
 </section>
-
-<section id="quiz" class="band"><div class="wrap section"><h2>Check your understanding</h2><div class="quiz" id="quizbox"></div></div></section>
-
-<section id="music" class="wrap section">
+</div>
+<div class="group" id="music"><div class="gh"><span>05</span> Music Player</div>
+<section id="musicsec" class="wrap section">
   <h2>Study music</h2>
   <p class="sub">Press play when you want background music. It never starts on its own.</p>
   <div class="player">
@@ -145,8 +140,9 @@
   </div>
   <audio id="aud" preload="metadata"></audio>
 </section>
-
-<section id="map" class="band">
+</div>
+<div class="group" id="map"><div class="gh"><span>06</span> Interactive Map</div>
+<section id="mapsec" class="band">
   <div class="wrap section">
     <h2>Where data lives: interactive map</h2>
     <p class="sub">Explore data center hubs, technology companies and universities. Drag to pan, use the + and − buttons to zoom, or search for any place.</p>
@@ -164,8 +160,9 @@
     <p class="note">Map data © OpenStreetMap contributors. Locations are approximate and chosen as examples. Place search uses OpenStreetMap's Nominatim service.</p>
   </div>
 </section>
-
-<section id="weather" class="wrap section">
+</div>
+<div class="group" id="weather"><div class="gh"><span>07</span> Weather Dashboard</div>
+<section id="weathersec" class="wrap section">
   <h2>Weather dashboard</h2>
   <p class="sub">Live weather from Open-Meteo. Search for a city or choose one below.</p>
   <form class="msearch" id="wsearch" role="search">
@@ -177,8 +174,9 @@
   <div id="wout" aria-live="polite"><p class="wload">Choose a city to load live weather.</p></div>
   <p class="note">Weather data by <a href="https://open-meteo.com/">Open-Meteo.com</a>, free for non-commercial use. Values appear only when the service returns them. Nothing is estimated or made up.</p>
 </section>
-
-<section id="videos" class="band">
+</div>
+<div class="group" id="videos"><div class="gh"><span>08</span> Educational Videos</div>
+<section id="videossec" class="band">
   <div class="wrap section">
     <h2>Educational video library</h2>
     <p class="sub">Select a video to play it. Each one uses the official player, so you get its play, pause, volume, captions and full-screen controls. Videos never start on their own.</p>
@@ -195,8 +193,9 @@
     </div>
   </div>
 </section>
-
-<section id="movies" class="wrap section">
+</div>
+<div class="group" id="movies"><div class="gh"><span>09</span> Movie Theater</div>
+<section id="moviessec" class="wrap section">
   <h2>Movie theater</h2>
   <p class="sub">Two full films you can watch right here, both free to embed. Select a poster to load the player, then use its play/pause and full-screen buttons.</p>
   <div class="chips" id="mvsel" aria-label="Choose a film"></div>
@@ -205,7 +204,9 @@
     <div class="mvinfo" id="mvinfo"></div>
   </div>
 </section>
-<section id="chatbot" class="band">
+</div>
+<div class="group" id="chatbot"><div class="gh"><span>10</span> AI Chatbot</div>
+<section id="chatbotsec" class="band">
   <div class="wrap section">
     <h2>Storage chatbot</h2>
     <p class="sub">Ask about drives, capacity or security, get a recommendation, or review the chapter. Press Enter to send.</p>
@@ -218,9 +219,19 @@
     </div>
   </div>
 </section>
+</div>
+<div class="group" id="quiz"><div class="gh"><span>11</span> Quiz and Learning Resources</div>
+<section id="quizsec" class="band"><div class="wrap section"><h2>Check your understanding</h2><div class="quiz" id="quizbox"></div></div></section><section id="resources" class="band"><div class="wrap section">
+  <h2>Learning resources</h2>
+  <div class="grid3">
+    <article class="card"><div class="ico">✅</div><h3>Key takeaways</h3><ul class="tk"><li>No storage type wins everywhere. Choose by capacity, speed, durability, portability and cost.</li><li>SSDs are faster and tougher. HDDs are cheapest per GB.</li><li>Keep 3 copies, on 2 media types, with 1 off-site.</li><li>Encrypt drives and protect accounts with strong passwords.</li></ul></article>
+    <article class="card"><div class="ico">🔁</div><h3>Review by topic</h3><ul class="tk"><li><a href="#fundamentals">Fundamentals</a></li><li><a href="#comparison">Technology comparison</a></li><li><a href="#tools">Interactive tools</a></li><li><a href="#videos">Educational videos</a></li><li><a href="#chatbot">Ask the chatbot to quiz you</a></li></ul></article>
+    <article class="card"><div class="ico">📖</div><h3>Glossary</h3><div class="gloss"><details><summary>Bit and byte</summary><p>A bit is a single 0 or 1. Eight bits make one byte.</p></details><details><summary>Non-volatile storage</summary><p>Storage that keeps data when the power is off, such as drives, discs and the cloud.</p></details><details><summary>HDD</summary><p>Hard disk drive. Stores data magnetically on spinning platters.</p></details><details><summary>SSD</summary><p>Solid-state drive. Stores data in flash memory chips with no moving parts.</p></details><details><summary>SATA</summary><p>An older connection standard for drives. SATA SSDs reach about 550 MB/s.</p></details><details><summary>NVMe</summary><p>A fast SSD interface that uses PCIe lanes, reaching several thousand MB/s.</p></details><details><summary>Flash memory</summary><p>Chips that keep data using trapped electric charge. Used in SSDs, USB drives and memory cards.</p></details><details><summary>Optical disc</summary><p>A CD, DVD or Blu-ray read by a laser. Blu-ray holds the most.</p></details><details><summary>Cloud storage</summary><p>Files kept on a provider's servers and reached over the internet.</p></details><details><summary>Data center</summary><p>A building full of servers and storage that powers cloud services.</p></details><details><summary>Backup</summary><p>An extra copy of your data. Follow the 3-2-1 rule: 3 copies, 2 media types, 1 off-site.</p></details><details><summary>Encryption</summary><p>Scrambling data so only someone with the key can read it.</p></details></div></article>
+  </div></div></section>
+</div>
 </main>
 
-<footer><p>Chapter 7 – Digital Storage · Student project</p></footer>
+<footer><p>Chapter 7 – Digital Storage · Student project · <a href="#home" style="color:#cfe0ff">Back to top</a></p></footer>
 <button class="bgm" id="bgm" aria-pressed="false">🎵 Music: off</button>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
 <script src="script.js"></script>
